@@ -19,9 +19,7 @@ extern Object* writelnProcedure;
 
 CodeBlock* codeBlock;
 
-// walk up the scope chain from the current scope to find how many
-// levels (nested blocks) away the variable/parameter was declared,
-// and resolve its local offset
+
 static void getVariableLevelOffset(Object* var, int* level, int* offset) {
   Scope* scope;
   Scope* s;
@@ -47,7 +45,7 @@ void genVariableAddress(Object* var) {
   getVariableLevelOffset(var, &level, &offset);
 
   if (var->kind == OBJ_PARAMETER && var->paramAttrs->kind == PARAM_REFERENCE)
-    genLV(level, offset);  // reference param: the slot holds the address of the real variable
+    genLV(level, offset);  
   else
     genLA(level, offset);
 }
@@ -56,11 +54,11 @@ void genVariableValue(Object* var) {
   int level, offset;
 
   if (var->kind == OBJ_PARAMETER && var->paramAttrs->kind == PARAM_REFERENCE) {
-    // slot holds the address of the real variable: load that address, then dereference
+    
     genVariableAddress(var);
     genLI();
   } else {
-    // plain variable/value-parameter: load its value directly, no address needed
+   
     getVariableLevelOffset(var, &level, &offset);
     genLV(level, offset);
   }
